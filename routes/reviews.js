@@ -23,7 +23,7 @@ router.post('/', ensureAuth, async (req, res) => {
   }
 })
 
-// @desc Show all stories
+// @desc Show all reviews
 // @route GET /reviews/add
 router.get('/', ensureAuth, async (req, res) => {
   try {
@@ -40,5 +40,104 @@ router.get('/', ensureAuth, async (req, res) => {
     res.render('error/500')
   }
 })
+
+// @desc    Show single review
+// @route   GET /reviews/:id
+router.get('/:id', ensureAuth, async (req, res) => {
+  try {
+    let review = await Review.findById(req.params.id)
+    .populate('user')
+    .lean()
+
+    if (!review) {
+      return res.render('error/404')
+    }
+
+    if (review.user._id != req.user.id && review.status == 'private') {
+      res.render('error/404')
+    } else {
+      res.render('reviews/show', {
+      review,
+      })
+    }
+  } catch (err) {
+    console.error(err)
+    res.render('error/404')
+  }
+})
+
+// @desc    Show edit page
+// @route   GET /reviews/edit/:id
+router.get('/edit/:id', ensureAuth, async (req, res) => {
+  try {
+    const review = await Review.findOne({
+      _id: req.params.id,
+    }).lean()
+
+    if (!review) {
+      return res.render('error/404')
+    }
+
+    if (review.user != req.user.id) {
+      res.redirect('/reviews')
+    } else {
+      res.render('reviews/edit', {
+        review,
+      })
+    }
+  } catch (err) {
+    console.error(err)
+    return res.render('error/500')
+  }
+})
+
+// @desc Update review
+// @route PUT /reviews/:id
+router.put('/:id', ensureAuth, async (req, res) => {
+  try {
+    let review = await Review.findById(req.params.id).lean()
+
+    if (!review) {
+      return res.render('error/404')
+    }
+
+    if (review.user != req.user.id) {
+      res.redirect('/reviews')
+    } else {
+      review = await Review.findOneAndUpdate({ _id: req.params.id }, req.body, {
+        new: true,
+        runValidators: true,
+      })
+
+      res.redirect('/dashboard')
+    }
+  } catch (err) {
+    console.error(err)
+    return res.render('error/500')
+  }
+})
+
+// @desc    Delete review
+// @route   DELETE /reviews/:id
+router.delete('/:id', ensureAuth, async (req, res) => {
+  try {
+    let review = await Review.findById(req.params.id).lean()
+
+    if (!review) {
+      return res.render('error/404')
+    }
+
+    if (review.user != req.user.id) {
+      res.redirect('/reviews')
+    } else {
+      await Review.remove({ _id: req.params.id })
+      res.redirect('/dashboard')
+    }
+  } catch (err) {
+    console.error(err)
+    return res.render('error/500')
+  }
+})
+
 
 module.exports = router
