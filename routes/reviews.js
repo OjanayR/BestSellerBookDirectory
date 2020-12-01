@@ -22,5 +22,23 @@ router.post('/', ensureAuth, async (req, res) => {
     res.render('error/500')
   }
 })
-  
-  module.exports = router
+
+// @desc Show all stories
+// @route GET /reviews/add
+router.get('/', ensureAuth, async (req, res) => {
+  try {
+    const reviews = await Review.find({ status: 'public' })
+      .populate('user')
+      .sort({ createdAt: 'desc' })
+      .lean()
+
+    res.render('reviews/index', {
+      reviews,
+    })
+  } catch (err) {
+    console.error(err)
+    res.render('error/500')
+  }
+})
+
+module.exports = router

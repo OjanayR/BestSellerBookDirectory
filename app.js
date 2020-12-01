@@ -29,27 +29,43 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Handlebars Helper
-const { formatDate } = require('.helpers/hbs')
+const { formatDate , stripeTags, truncate, editIcon } = require('.helpers/hbs')
+
 // Handlebars
 app.engine('.hbs', exphbs({ 
     helpers: {
         formatDate, 
+        stripeTags,
+        truncate,
+        editIcon,
     },
-    defaultLayout: 'main', extname: '.hbs'}));
+    defaultLayout: 'main', 
+    extname: '.hbs',
+})
+);
 app.set('view engine', '.hbs');
 
 // Sessions
-app.use(session({
+app.use(
+    session({
     secret: 'keyboard cat',
     resave: false,
     saveUninitialized: false,
     store: new MongoStore({ mongooseConnection: mongoose.connection })
 
-}))
+})
+)
 
 // Passport middleware
 app.use(passport.initialize())
 app.use(passport.session())
+
+// Set global variable
+app.use(function (req, res, next) {
+    res.locals.user = req.user || null
+    next()
+})
+
 
 
 // Static folder
