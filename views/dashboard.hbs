@@ -15,7 +15,7 @@
         {{#each reviews}}
         <tr>
             <td><a href= "/reviews/{{_id}}"></a>{{title}}</td>
-            <td>{{createAt}}</td>
+            <td>{{formatDate createAt 'MMMM Do YYYY, h:mm:ss a'}}</td>
             <td><span class="dash-status">{{status}}</span></td>
             <td></td>
         </tr>
