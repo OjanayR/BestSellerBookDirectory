@@ -8,3 +8,4 @@
                        Font Awesome
                        
 ### Wireframe 
+/Users/ojanayrodriguez/Desktop/bestsellerbookdirectory/images/BestSellerBookReview-Image6.png
