@@ -42,10 +42,18 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Handlebars Helper
-const { formatDate , stripeTags, truncate, editIcon, select } = require('.helpers/hbs')
+const { 
+  formatDate, 
+  stripeTags, 
+  truncate, 
+  editIcon, 
+  select, 
+} = require('./helpers/hbs')
 
 // Handlebars
-app.engine('.hbs', exphbs({ 
+app.engine(
+  '.hbs', 
+  exphbs({ 
     helpers: {
         formatDate, 
         stripeTags,
@@ -65,8 +73,7 @@ app.use(
     secret: 'keyboard cat',
     resave: false,
     saveUninitialized: false,
-    store: new MongoStore({ mongooseConnection: mongoose.connection })
-
+    store: new MongoStore({ mongooseConnection: mongoose.connection }),
 })
 )
 
@@ -79,8 +86,6 @@ app.use(function (req, res, next) {
     res.locals.user = req.user || null
     next()
 })
-
-
 
 // Static folder
 app.use(express.static(path.join(__dirname, 'public')))
